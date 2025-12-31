@@ -42,21 +42,22 @@ Create the base using this guide:
 [💻 Running Windows on your M1 Mac with UTM and CrystalFetch](https://gist.github.com/paulfermoreyes/daf4c89327707a333c0b05e5855eee64)
 
 Name the VM "Windows-runner"
+
 Create a shared directory on the host machine eg. `~/.utm/shared`, and update the VM settings to grant access.
 
 Start the VM and modify it as follows:
 
-Install UTM guest tools
-Install the latest Windows updates
-Install the autologin package from https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-Enable script execution using the command:
+- Install UTM guest tools
+- Install the latest Windows updates
+- Install the autologin package from https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+- Enable script execution using the command:
 
 ```bash
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-Install git bash from https://git-scm.com/install/windows
-Install jq using the command:
+- Install git bash from https://git-scm.com/install/windows
+- Install jq using the command:
 
 ```bash
 winget install jqlang.jq
@@ -109,6 +110,7 @@ The script will repeatedly create a new clones after the previous one shuts down
 - Change the runner script if your named your base something besides "Windows-runner"
 - You must restart the script if your configuration changes
 - Make sure you are running the script in Terminal, not VSCode
+- Make sure the repo organization and name are correct
 
 ## Tips
 

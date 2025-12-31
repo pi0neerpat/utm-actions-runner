@@ -32,4 +32,4 @@ Start-Process -Wait -NoNewWindow C:\actions-runner\config.cmd -ArgumentList @(
 Start-Process -Wait -NoNewWindow C:\actions-runner\run.cmd
 
 # Stop the VM after the runner exits
-# Stop-Computer -Force
+Stop-Computer -Force
