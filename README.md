@@ -2,9 +2,9 @@
 
 Like Tartlet for UTM- Continuously clones, starts, and cleans up a fresh Windows VM for GitHub Actions using UTM CLI.
 
-Tartlet is a powerful tool, but only supports MacOS and Linux VMs using Tart. I created this repo to provide the same local runner experience for Windows VMs using UTM.
+[Tartlet](https://github.com/shapehq/tartelet) is a powerful tool, but only supports Mac and Linux runners using Tart. I created this repo to provide the same experience for Windows runners on Mac.
 
-If you want to run a Windows github action runner on your Mac hardware, this is a good place to start.
+If you want to run Windows github runners on your Mac hardware, this might be a good place to start.
 
 ## Resources
 
@@ -24,6 +24,8 @@ sudo ln -sf /Applications/UTM.app/Contents/MacOS/utmctl /usr/local/bin/utmctl
 # Test it works
 utmctl --version
 ```
+
+Note: UTM CLI doesn't behave properly in VSCode- recommend using Terminal for all commands.
 
 ### Windows "Base" VM Setup
 
@@ -100,8 +102,9 @@ The script will repeatedly create a new clones after the previous one shuts down
 - Check the startup script in the shared directory. It should have the correct values.
 - Change the runner script if your named your base something besides "Windows-runner"
 - You must restart the script if your configuration changes
+- Make sure you are running the script in Terminal, not VSCode
 
-## Tips:
+## Tips
 
 - Use the shared directory to enable a persistent local cache, eg:
 
@@ -126,6 +129,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.*.txt') }}
 ```
 
-## Improvements:
+## Improvements
 
+- Changing repos is difficult. Tartelet solved this using Github App (https://github.com/shapehq/tartelet/wiki/Configuring-Tartelet). This is out of scope for now.
 - TODO: what else is needed?
