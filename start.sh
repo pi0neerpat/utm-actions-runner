@@ -71,7 +71,7 @@ delete_vm_with_retry() {
         log "Deleted $vm_name."
         return 0
     else
-        log "Delete failed for $vm_name (attempt $attempt/$max_attempts). Retrying in 5s..."
+        log "Delete failed for $vm_name."
         sleep 5
     fi
 }
@@ -91,50 +91,50 @@ delete_old_clones() {
 
 # Main loop
 while true; do
-    # delete_old_clones
+    delete_old_clones
     
-    # # Generate a unique clone name
-    # CLONE_NAME="${CLONE_PREFIX}$(date +%s)"
-    # log "Cloning $BASE_VM to $CLONE_NAME"
-    # if ! utmctl clone "$BASE_VM" --name "$CLONE_NAME"; then
-    #     log "Clone failed. Retrying in 5 seconds..."
-    #     sleep 5
-    #     continue
-    # fi
+    # Generate a unique clone name
+    CLONE_NAME="${CLONE_PREFIX}$(date +%s)"
+    log "Cloning $BASE_VM to $CLONE_NAME"
+    if ! utmctl clone "$BASE_VM" --name "$CLONE_NAME"; then
+        log "Clone failed. Retrying in 5 seconds..."
+        sleep 5
+        continue
+    fi
     
-    # log "Starting $CLONE_NAME ..."
-    # if ! utmctl start "$CLONE_NAME"; then
-    #     log "Start failed. Deleting $CLONE_NAME and retrying in 5 seconds..."
-    #     delete_vm_with_retry "$CLONE_NAME"
-    #     sleep 5
-    #     continue
-    # fi
+    log "Starting $CLONE_NAME ..."
+    if ! utmctl start "$CLONE_NAME"; then
+        log "Start failed. Deleting $CLONE_NAME and retrying in 5 seconds..."
+        delete_vm_with_retry "$CLONE_NAME"
+        sleep 5
+        continue
+    fi
     
-    # # Wait for the VM to enter 'started' state (timeout after 60s)
-    # log "Waiting for $CLONE_NAME to enter 'started' state..."
-    # running_wait=0
-    # running_timeout=60
-    # while (( running_wait < running_timeout )); do
-    #     STATUS=$(get_vm_status "$CLONE_NAME")
-    #     if [[ "$STATUS" == "started" ]]; then
-    #         log "$CLONE_NAME is started."
-    #         break
-    #     fi
-    #     sleep 2
-    #     ((running_wait+=2))
-    # done
-    # if [[ "$STATUS" != "started" ]]; then
-    #     log "$CLONE_NAME never entered 'started' state (status: $STATUS). Deleting and retrying..."
-    #     delete_vm_with_retry "$CLONE_NAME"
-    #     sleep 5
-    #     continue
-    # fi
+    # Wait for the VM to enter 'started' state (timeout after 60s)
+    log "Waiting for $CLONE_NAME to enter 'started' state..."
+    running_wait=0
+    running_timeout=60
+    while (( running_wait < running_timeout )); do
+        STATUS=$(get_vm_status "$CLONE_NAME")
+        if [[ "$STATUS" == "started" ]]; then
+            log "$CLONE_NAME is started."
+            break
+        fi
+        sleep 2
+        ((running_wait+=2))
+    done
+    if [[ "$STATUS" != "started" ]]; then
+        log "$CLONE_NAME never entered 'started' state (status: $STATUS). Deleting and retrying..."
+        delete_vm_with_retry "$CLONE_NAME"
+        sleep 5
+        continue
+    fi
     
-    # # Wait for the VM to stop robustly
-    # wait_for_vm_stopped "$CLONE_NAME"
+    # Wait for the VM to stop robustly
+    wait_for_vm_stopped "$CLONE_NAME"
     
-    # # Delete the stopped clone before next iteration, with retries
-    # log "Deleting stopped clone $CLONE_NAME ..."
-    # delete_vm_with_retry "$CLONE_NAME"
-    # sleep 2
+    # Delete the stopped clone before next iteration, with retries
+    log "Deleting stopped clone $CLONE_NAME ..."
+    delete_vm_with_retry "$CLONE_NAME"
+    sleep 2
 done

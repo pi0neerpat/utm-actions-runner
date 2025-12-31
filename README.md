@@ -99,6 +99,7 @@ The script will repeatedly create a new clones after the previous one shuts down
 
 - Check the startup script in the shared directory. It should have the correct values.
 - Change the runner script if your named your base something besides "Windows-runner"
+- You must restart the script if your configuration changes
 
 ## Tips:
 
@@ -114,13 +115,17 @@ jobs:
   build:
     runs-on: [self-hosted, windows]
     env:
+      # Use the Z: Drive shared directory
       SELF_CACHED_DIR: /z
 
     steps:
-      # iby/self-cached will use SELF_CACHED_DIR
       - name: Cache pip downloads
         uses: iby/self-cached@**v1**
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.*.txt') }}
 ```
+
+## Improvements:
+
+- TODO: what else is needed?
