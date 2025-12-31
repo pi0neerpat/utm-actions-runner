@@ -14,7 +14,13 @@ https://mac.getutm.app/
 
 https://docs.getutm.app/scripting/scripting/
 
-### UTM Installation
+## Overview
+
+- Guide to set up a Windows VM as a local Github Action Runner
+- Script to orchestrate runner deployment / re-deployment
+- Tips on local runners
+
+### 1. Install UTM
 
 Install UTM and expose the CLI
 
@@ -27,7 +33,7 @@ utmctl --version
 
 Note: UTM CLI doesn't behave properly in VSCode- recommend using Terminal for all commands.
 
-### Windows "Base" VM Setup
+### 2. Setup Windows "Base" VM
 
 We need a Windows Virtual Machine to serve as the source, or "base" for runner clones. The base VM should not be modified after setup, and any testing should be done on clones, to ensure a stable runner environment.
 
@@ -62,7 +68,7 @@ Optional performance and organization changes:
 - Stop windows search indexing: run the command `services.msc` > disable Windows Search on startup
 - (TODO: add more)
 
-### Github Action Runner Setup
+### 3. Setup Github Actions
 
 In your Repo navigate to Settings > Actions > Runners > New self-hosted Runner.
 
@@ -74,7 +80,7 @@ The startup script `start-action-runner.ps1` configures our runner on startup. I
 - command: powershell.exe
 - arguments: -File "Z:\start-action-runner.ps1"
 
-### Start windows-runner-on-mac
+### 4. Start Runner
 
 Now we are ready to start our runner manager.
 
@@ -90,7 +96,7 @@ REPO_NAME="your_repo"
 Then start the runner with:
 
 ```bash
-./utm-actions-runner.sh
+./start.sh
 ```
 
 This will copy the startup script to the shared directory, update the runner config values, and start your new cloned runner.
