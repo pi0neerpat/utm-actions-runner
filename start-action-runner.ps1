@@ -22,7 +22,7 @@ Start-Process -Wait -NoNewWindow C:\actions-runner\config.cmd -ArgumentList @(
     '--unattended',
     '--ephemeral',
     '--replace',
-    '--name', 'runner-windows-11',
+    '--name', "runner-windows-11-UUID",
     '--runnergroup', 'Default',
     '--work', '_work',
     '--token', 'TOKEN'

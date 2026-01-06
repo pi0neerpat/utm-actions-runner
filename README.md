@@ -56,7 +56,9 @@ Start the VM and modify it as follows:
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-- Install git bash from https://git-scm.com/install/windows
+- Install git bash from https://git-scm.com/install/windows. Use the Recommended Settings, else your PATH may not be correct for bash in Github Actions.
+- Modify PATH to point to the correct bash.exe. Search for "Edit System Variable" > select "Environment Variables" > edit “Path” and add/move `C:\Program Files\Git\bin` at the top.
+
 - Install jq using the command:
 
 ```bash
@@ -67,7 +69,13 @@ Optional performance and organization changes:
 
 - Uninstall Copilot: Settings > apps > installed apps > Copilot
 - Stop windows search indexing: run the command `services.msc` > disable Windows Search on startup
-- (TODO: add more)
+- Remove the "Windows" Hotkey from interfering with CMD+tab usage on mac:
+
+```pwsh
+TODO
+```
+
+- Update File Explorer to show hidden files: Settings > System > Advanced > File Explorer, and enable the relevant settings
 
 ### 3. Setup Github Actions
 

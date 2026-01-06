@@ -33,6 +33,9 @@ cp "$START_SCRIPT_NAME" "$SHARED_DIRECTORY"
 sed -i '' "s/REPO_NAME/$REPO_NAME/g" "$SHARED_DIRECTORY/$START_SCRIPT_NAME"
 sed -i '' "s/ORGANIZATION/$ORGANIZATION/g" "$SHARED_DIRECTORY/$START_SCRIPT_NAME"
 sed -i '' "s/TOKEN/$TOKEN/g" "$SHARED_DIRECTORY/$START_SCRIPT_NAME"
+UNIQUE_ID=$(date '+%Y-%m-%d-%H-%M-%S')
+sed -i '' "s/UUID/$UNIQUE_ID/g" "$SHARED_DIRECTORY/$START_SCRIPT_NAME"
+
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
@@ -94,7 +97,7 @@ while true; do
     delete_old_clones
     
     # Generate a unique clone name
-    CLONE_NAME="${CLONE_PREFIX}$(date +%s)"
+    CLONE_NAME="${CLONE_PREFIX}$(date '+%Y-%m-%d-%H:%M:%S')"
     log "Cloning $BASE_VM to $CLONE_NAME"
     if ! utmctl clone "$BASE_VM" --name "$CLONE_NAME"; then
         log "Clone failed. Retrying in 5 seconds..."
