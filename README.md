@@ -4,17 +4,16 @@ Like [Tartlet](https://github.com/shapehq/tartelet) but for Windows on Mac.
 
 Spins up a fresh Github action runner for Windows, using the UTM CLI.
 
-
-
 If you want Windows github runners on Mac, this may be a good place to start.
+
+<p align="center">
+  <img src="utm-actions-runner-flow-diagram.svg" alt="UTM Actions Runner flow diagram" style="background: white;"/>
+</p>
+
 
 ## Resources
 
-UTM - Windows and Linux on Mac
-
-https://mac.getutm.app/
-
-https://docs.getutm.app/scripting/scripting/
+- UTM - Windows and Linux on Mac https://mac.getutm.app/
 
 ## Overview
 
