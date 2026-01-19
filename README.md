@@ -1,10 +1,12 @@
 # UTM Actions Runner
 
-Like Tartlet for UTM- Continuously clones, starts, and cleans up a fresh Windows VM for GitHub Actions using UTM CLI.
+Like [Tartlet](https://github.com/shapehq/tartelet) but for Windows on Mac. 
 
-[Tartlet](https://github.com/shapehq/tartelet) is a powerful tool, but only supports Mac and Linux runners using Tart. I created this repo to provide the same experience for Windows runners on Mac.
+Spins up a fresh Github action runner for Windows, using the UTM CLI.
 
-If you want to run Windows github runners on your Mac hardware, this might be a good place to start.
+
+
+If you want Windows github runners on Mac, this may be a good place to start.
 
 ## Resources
 
@@ -16,9 +18,10 @@ https://docs.getutm.app/scripting/scripting/
 
 ## Overview
 
-- Guide to set up a Windows VM as a local Github Action Runner
-- Script to orchestrate runner deployment / re-deployment
-- Tips on local runners
+1. Install UTM
+2. Create the windows VM
+3. Install Github Actions
+4. Install the Github App for generating runner keys
 
 ### 1. Install UTM
 
@@ -65,16 +68,12 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 winget install jqlang.jq
 ```
 
-Optional performance and organization changes:
-
-- Uninstall Copilot: Settings > apps > installed apps > Copilot
+Optional performance and ease-of-use changes:
+- Install windows-nvm: https://github.com/coreybutler/nvm-windows
+- Install yarn: https://yarnpkg.com/getting-started/install
 - Stop windows search indexing: run the command `services.msc` > disable Windows Search on startup
-- Remove the "Windows" Hotkey from interfering with CMD+tab usage on mac:
-
-```pwsh
-TODO
-```
-
+- Disable startup apps: Settungs > search "Startup Apps"
+- Disable the "Windows" key: https://github.com/nous-/disable-windows-key
 - Update File Explorer to show hidden files: Settings > System > Advanced > File Explorer, and enable the relevant settings
 
 ### 3. Setup Github Actions
@@ -89,7 +88,50 @@ The startup script `start-action-runner.ps1` configures our runner on startup. I
 - command: powershell.exe
 - arguments: -File "Z:\start-action-runner.ps1"
 
-### 4. Start Runner
+### 4. Setup GitHub App
+
+To automatically generate runner registration tokens (no manual token retrieval needed), set up a GitHub App:
+
+1. **Create a GitHub App**:
+   - For organization runners: Go to your organization settings → Developer settings → GitHub Apps → New GitHub App
+   - For repository runners: Go to your account settings → Developer settings → GitHub Apps → New GitHub App
+   - Set the app name (e.g., "UTM Actions Runner")
+   - Set permissions based on scope:
+     - **Organization scope**: Enable "Organization: Self-hosted runners (Read & Write)"
+     - **Repository scope**: Enable "Repository: Administration (Read & Write)" and "Repository: Metadata (Read-only)"
+   - Generate a private key and download it (`.pem` file)
+   - Note the **App ID** (shown on the app settings page)
+
+2. **Install the GitHub App**:
+   - For organization: Install on your organization
+   - For repository: Install on your account
+   - **Find the Installation ID** :
+     
+     - Go to: https://github.com/settings/apps (for personal account) or https://github.com/organizations/{ORG}/settings/apps (for organization)
+     - Click on your app
+     - Click "Install App" or view existing installations
+     - Click on the installation (repository or organization name)
+     - The Installation ID is in the URL: `.../installations/{INSTALLATION_ID}`
+
+3. **Store the Private Key**:
+   
+   Store the private key in Keychain:
+
+   ```bash
+   KEY_FILE="/path/to/your-private-key.pem"
+   KEY_CONTENT=$(cat "$KEY_FILE")
+
+   security add-generic-password \
+     -a "utm-actions-runner" \
+     -s "utm-actions-runner-github-app" \
+     -w "$KEY_CONTENT" \
+     -U
+   ```
+   
+   **Important**: If you get "Operation not permitted" when reading the file:
+   - Move the file away from ~/Downloads
+
+### 5. Start Runner
 
 Now we are ready to start our runner manager.
 
@@ -97,10 +139,13 @@ Create a `.env` with the following values:
 
 ```bash
 SHARED_DIRECTORY="$HOME/.utm/shared"
-TOKEN="your_token_from_runner_setup"
-ORGANIZATION="your_username"
-REPO_NAME="your_repo"
+GITHUB_APP_ID="123456"
+GITHUB_APP_INSTALLATION_ID="78901234"
+GITHUB_RUNNER_SCOPE="repository"  # or "organization"
+GITHUB_ORGANIZATION="your_username_or_org"
+GITHUB_REPOSITORY_NAME="your_repo"  # Only needed for repository scope
 ```
+
 
 Then start the runner with:
 
@@ -108,14 +153,17 @@ Then start the runner with:
 ./start.sh
 ```
 
-This will copy the startup script to the shared directory, update the runner config values, and start your new cloned runner.
+This will:
+- Generate a fresh registration token automatically using the GitHub App
+- Copy the startup script to the shared directory with the token
+- Start your new cloned runner
 
-The script will repeatedly create a new clones after the previous one shuts down.
+The script will repeatedly create new clones after the previous one shuts down, generating a fresh token for each instance.
 
 ## Troubleshooting
 
 - Check the startup script in the shared directory. It should have the correct values.
-- Change the runner script if your named your base something besides "Windows-runner"
+- Check the your base VM naming if you chose something besides "Windows-runner"
 - You must restart the script if your configuration changes
 - Make sure you are running the script in Terminal, not VSCode
 - Make sure the repo organization and name are correct
@@ -145,7 +193,3 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.*.txt') }}
 ```
 
-## Improvements
-
-- Changing repos is difficult. Tartelet solved this using Github App (https://github.com/shapehq/tartelet/wiki/Configuring-Tartelet). This is out of scope for now.
-- TODO: what else is needed?
