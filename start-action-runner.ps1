@@ -1,5 +1,5 @@
 # This should be run at startup of the Windows VM to configure and start the GitHub Actions runner
-# It is automatically modified and copied to the shared directory in ./windows-runner.sh 
+# It is automatically modified and copied to the shared directory by ./start.sh
 
 # Wait for network and GitHub connectivity
 while ($true) {
@@ -18,7 +18,7 @@ while ($true) {
 }
 
 Start-Process -Wait -NoNewWindow C:\actions-runner\config.cmd -ArgumentList @(
-    '--url', 'https://github.com/ORGANIZATION/REPO_NAME',
+    '--url', 'GITHUB_URL',
     '--unattended',
     '--ephemeral',
     '--replace',

@@ -126,6 +126,9 @@ To automatically generate runner registration tokens (no manual token retrieval 
      -s "utm-actions-runner-github-app" \
      -w "$KEY_CONTENT" \
      -U
+
+    # IMPORTANT: Delete the key file after you are done
+    rm "$KEY_FILE"
    ```
    
    **Important**: If you get "Operation not permitted" when reading the file:
