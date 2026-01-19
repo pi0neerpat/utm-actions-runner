@@ -237,8 +237,12 @@ github_api() {
 get_installation_token() {
     local pem_file jwt token_json
     pem_file="$(get_private_key_pem_file)"
+
+    # Always delete the temp PEM file, even if JWT generation or API calls fail.
+    # Note: This script does not use any other traps, so clearing RETURN is safe here.
+    trap 'rm -f "${pem_file:-}"' RETURN
+
     jwt="$(generate_jwt "$pem_file")"
-    rm -f "$pem_file"
 
     token_json="$(
         github_api POST "/app/installations/${GITHUB_APP_INSTALLATION_ID}/access_tokens" "$jwt"

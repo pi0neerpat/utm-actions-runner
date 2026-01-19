@@ -196,3 +196,8 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.*.txt') }}
 ```
 
+## Security Considerations
+
+- The highest risk is access to the Github App private key, which is protected by Keychain Access.
+- The JWT could be leaked to another processes on your machine  which has Read & Write access. Please restrict Github App access to only relevant repositories. 
+- The runner registration token could be leaked to another process on your machine.
